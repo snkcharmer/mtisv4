@@ -996,7 +996,27 @@
 			print_r($this->db->last_query()); die();
 			return $query;
 		}
-
+		
+		public function summary_report($startdate,$enddate,$category)
+		{
+			$sql = 'select coalesce(g.module,d.typename) as typename, d.typeshort, sum(a.amount) as totalSum
+					from cash_ornum j 
+					left join cash_payment c on c.ornum_id = j.ornum_id
+					left join cash_paymentlist a on a.payid = c.payid
+					left join trainee b on c.trid = b.trid
+					left join cash_payment_type d on a.paytypeid = d.paytypeid
+					left join training e on a.trainingid = e.trainingid
+					left join schedule f on e.code = f.code
+					left join module g on f.modcode = g.modcode
+					left join cash_payment_category h on c.paycatid = h.paycatid
+					left join cash_paymentlist_remarks i on a.paylistid = i.paylistid
+					left join venue k on c.venid = k.venid
+					where j.dateused between ? and ? and j.paycatid = ? and j.venid = ? 
+					group by d.paytypeid
+					order by typename asc';
+			$query = $this->db->query($sql,array($startdate,$enddate,$category,$this->session->userdata("venid")));
+			return $query;
+		}
 		
 	}
 ?>

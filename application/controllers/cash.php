@@ -931,7 +931,7 @@ class Cash extends CI_Controller {
 		$pdf->AddPage('Letter-P', // L - landscape, P - portrait
         '', '', '', '',
         10, // margin left
-        0, // margin right
+        5, // margin right
         5, // margin top
         0, // margin bottom
         10, // margin header
@@ -1102,4 +1102,13 @@ class Cash extends CI_Controller {
 		echo(json_encode($data));
 	}
 	
+	public function summaryReport()
+	{
+		$startdate = $this->input->post('startdate');
+		$enddate = $this->input->post('enddate');
+		$category = $this->input->post('cat');
+		
+		$data['records'] = $this->cash_model->summary_report($startdate,$enddate,$category);
+		$this->load->view("cash/Print/SummaryRegularFundsReports", $data);
+	}
 }
